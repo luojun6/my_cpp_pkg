@@ -4,6 +4,7 @@ colcon build --packages-select my_cpp_pkg
 
 . install/setup.bash
 
+ros2 topic echo ${topic_name}
 ```
 
 ```json
