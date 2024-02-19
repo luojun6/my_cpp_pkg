@@ -1,12 +1,3 @@
-```sh
-ros2 pkg create my_cpp_pkg --build-type ament_cmake --dependencies rclcpp
-colcon build --packages-select my_cpp_pkg
-
-. install/setup.bash
-
-ros2 topic echo ${topic_name}
-```
-
 ```json
 {
   "configurations": [
@@ -26,4 +17,21 @@ ros2 topic echo ${topic_name}
   ],
   "version": 4
 }
+```
+
+```sh
+ros2 pkg create my_cpp_pkg --build-type ament_cmake --dependencies rclcpp
+colcon build --packages-select my_cpp_pkg
+
+. install/setup.bash
+
+ros2 topic echo ${topic_name}
+
+
+# Modify the name
+ros2 run my_cpp_pkg robot_news_station --ros-args -r_node:=my_station
+
+# Remap hte topic name
+ros2 run my_cpp_pkg robot_news_station --ros-args -r __node:=my_station -r robot_news:=my_news
+ros2 run my_cpp_pkg smartphone --ros-args -r robot_news:=my_news
 ```
