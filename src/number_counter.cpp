@@ -4,46 +4,37 @@
 class NumberCounterNode : public rclcpp::Node 
 {
 public:
-    NumberCounterNode() : Node("number_counter")  
-    {
+    NumberCounterNode() : Node("number_counter")
+    {   
         subsriber_ = this->create_subscription<example_interfaces::msg::Int64>(
             "number", 10,
-            std::bind(&NumberCounterNode::callbackNumberReceived, 
-            this, std::placeholders::_1));
-        timer_ = this->create_wall_timer(std::chrono::milliseconds(1000),
-                                         std::bind(&NumberCounterNode::publishNumberCount, 
-                                         this));
+            std::bind(&NumberCounterNode::callbackNumberReceived,
+                      this, std::placeholders::_1));
+        publisher_ = this->create_publisher<example_interfaces::msg::Int64>("number_counter", 10);
 
-        RCLCPP_INFO(this->get_logger(), "NumberCounter has been started.");
+        RCLCPP_INFO(this->get_logger(), "Number Counter has been started.");
     }
 
 private:
     void callbackNumberReceived(const example_interfaces::msg::Int64::SharedPtr msg)
     {
-        received_number_ = msg->data;
-
-        if (received_number_ != counting_number_)
+        if (counter_ == 0)
         {
-            // publishing_number_ = received_number_;
-            pcount_->data = received_number_;
-            counting_number_ = received_number_;
+            counter_ = msg->data;
         }
-    }
-
-    void publishNumberCount()
-    {
-        pcount_->data += 2;
-        publisher_->publish(*pcount_);
+        else
+        {
+            counter_ += 2;
+        }
+        auto number_counter = example_interfaces::msg::Int64();
+        number_counter.data = counter_;
+        publisher_->publish(number_counter);
     }
 
     rclcpp::Subscription<example_interfaces::msg::Int64>::SharedPtr subsriber_;
     rclcpp::Publisher<example_interfaces::msg::Int64>::SharedPtr publisher_;
     rclcpp::TimerBase::SharedPtr timer_;
-    std::int64_t received_number_;
-    // std::int64_t publishing_number_;
-    std::shared_ptr<example_interfaces::msg::Int64> pcount_;
-    std::int64_t counting_number_ = 0;
-    std::int64_t increasement = 2;
+    std::int64_t counter_ = 0;
 };
 
 int main(int argc, char **argv)
